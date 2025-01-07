@@ -1,8 +1,7 @@
 
-
 # did:btc1 DID Method Specification
 
-### Authors:
+### Authors
 
 - Ryan Grant <rgrant@contract.design> [Digital Contract Design](https://contract.design/)
 - Will Abramson <will@legreq.com> [Legendary Requirements](legreq.com)
@@ -11,9 +10,9 @@
 - Dan Pape <dpape@contract.design> [Digital Contract Design](https://contract.design/)
 - Jennie Meier <jennie@contract.design> [Digital Contract Design](https://contract.design/)
 
-### Contributors:
+### Contributors
 
-- Kate Sills <katelynsills@gmail.com> 
+- Kate Sills <katelynsills@gmail.com>
 
 ### Publication Date: 20th September 2024
 
@@ -28,7 +27,7 @@ It improves on prior work by allowing: zero-cost off-chain DID creation; aggrega
 
 # Table of Contents
 
-1. [Introduction](#1-introduction)
+1. [Introduction and Motivation](#1-introduction-and-motivation)
 2. [Terminology](#2-terminology)
 3. [Syntax](#3-syntax)
 4. [CRUD Operations](#4-crud-operations)
@@ -61,69 +60,68 @@ This DID Method takes care to only allow resolution to succeed when the resovler
 This is a necessary feature when key material is used to sign serious contracts.
 We call this feature "Non-Repudiation", and point out how an anti-feature called "Late Publishing" affects some other DID Methods.
 
-
 **did:btc1** is created for those who wish to have it all:
-* resistance to censorship;
-* non-correlation through pairwise DIDs;
-* private communication of the DID document;
-* a closed loop on private DID resolution;
-* efficiency (in cost and energy usage), via offline DID creation and aggregatable updates;
-* long-term identifiers that can support frequent updates; and
-* non-repudiation appropriate for serious contracts.
-
+- resistance to censorship;
+- non-correlation through pairwise DIDs;
+- private communication of the DID document;
+- a closed loop on private DID resolution;
+- efficiency (in cost and energy usage), via offline DID creation and aggregatable updates;
+- long-term identifiers that can support frequent updates; and
+- non-repudiation appropriate for serious contracts.
 
 ### Comparison with other DID Methods that rely on Bitcoin's blockchain for anchoring
 
 #### did:btcr
 
 BTCR is the original Bitcoin DID Method.  It kept its focus on censorship resistance.  It has the following limitations:
-* It is prohibitively expensive to maintain many DIDs, because both creation and every update require a separate on-chain transaction.
-* It requires storing the data for the DID document somewhere public and exposed via OP_RETURN: either at a URL, or accessible via content-addressed storage such as IPFS.
-* Once a DID document has been revealed as connected to a transaction, it could be possible for colluding miners to target the controlling funds for censorship, which might block updates (although this is currently highly unlikely since no valid transaction has ever been successfully censored from the blockchain by miners).
-* When all of the prior updates were kept online, BTCR provided non-repudiation, however it is possible to take prior updates offline and still resolve the current BTCR update as a valid DID Document, so it cannot guarantee non-repudiation.
+- It is prohibitively expensive to maintain many DIDs, because both creation and every update require a separate on-chain transaction.
+- It requires storing the data for the DID document somewhere public and exposed via OP_RETURN: either at a URL, or accessible via content-addressed storage such as IPFS.
+- Once a DID document has been revealed as connected to a transaction, it could be possible for colluding miners to target the controlling funds for censorship, which might block updates (although this is currently highly unlikely since no valid transaction has ever been successfully censored from the blockchain by miners).
+- When all of the prior updates were kept online, BTCR provided non-repudiation, however it is possible to take prior updates offline and still resolve the current BTCR update as a valid DID Document, so it cannot guarantee non-repudiation.
 
 #### did:ion
 
 ION anchors on the Bitcoin blockchain following a sidetree approach.  It has the following limitations:
-* Although in the normal case where data is available this DID Method performs fine, it does not fully address the late publishing problem, and thus attackers may manipulate edge cases to create doubt about signatures used for attestation.
-* It stores DID documents on IPFS, and thus does not allow keeping the DID document private between the DID controller and a relying party, even if they are capable of their own did:ion resolution.
+- Although in the normal case where data is available this DID Method performs fine, it does not fully address the late publishing problem, and thus attackers may manipulate edge cases to create doubt about signatures used for attestation.
+- It stores DID documents on IPFS, and thus does not allow keeping the DID document private between the DID controller and a relying party, even if they are capable of their own did:ion resolution.
 
 #### did:btco
 
 This DID Method stores the entire DID document on-chain in transactions using "inscriptions".  Because of this, its main feature of totally on-chain data is also its main structural limitation:
-* Those transactions are very expensive.
-* They cannot be kept private.
+- Those transactions are very expensive.
+- They cannot be kept private.
 
 #### did:btc
 
 This DID Method is like did:btco in that it also uses inscriptions.  It adds a batching mechanism that reduces overhead but still stores all data on-chain.  Its documentation lists "subject keys" as a feature, but they are just talking about defining additional keys in a DID document, which all of these DID Methods provide.  In summary its main limitations are:
-* Creation and update require expensive transactions.
-* did:btc does not contemplate a way to keep DID documents private.
+- Creation and update require expensive transactions.
+- did:btc does not contemplate a way to keep DID documents private.
 
 #### did:btc1
 
 ### Features
 
-* There is no proprietary blockchain, only the Bitcoin blockchain.
-* Offline creation allows creating DIDs without any on-chain transactions.
-* Aggregator Beacons can aggregate any number of updates from any number of DID controllers in one Bitcoin transaction.
-* Non-repudiation is provided by - and *"Late Publishing"* is avoided by - ensuring 100% valid coverage of the entire update history without gaps or ambiguity.
-* Public disclosure of DID documents can be avoided by using Sidecar delivery of the necessary DID history along with the DID itself.
-* Public disclosure of updates to DID documents can also be avoided by only recording a Sparse Merkle Tree of proofs of DID updates on-chain.
-* Resolvers need only filter transactions likely to contain updates for those DIDs of interest.
-* Any kind of key can be included in a DID Document, using an update.
-* Simple deterministic DIDs can be recovered from typical Bitcoin seed words.
+- There is no proprietary blockchain, only the Bitcoin blockchain.
+- Offline creation allows creating DIDs without any on-chain transactions.
+- Aggregator Beacons can aggregate any number of updates from any number of DID controllers in one Bitcoin transaction.
+- Non-repudiation is provided by - and *"Late Publishing"* is avoided by - ensuring 100% valid coverage of the entire update history without gaps or ambiguity.
+- Public disclosure of DID documents can be avoided by using Sidecar delivery of the necessary DID history along with the DID itself.
+- Public disclosure of updates to DID documents can also be avoided by only recording a Sparse Merkle Tree of proofs of DID updates on-chain.
+- Resolvers need only filter transactions likely to contain updates for those DIDs of interest.
+- Any kind of key can be included in a DID Document, using an update.
+- Simple deterministic DIDs can be recovered from typical Bitcoin seed words.
 
 ### Limitations
+
 * Resolvers require read-only view of all blocks arriving on the Bitcoin blockchain.
-* DID controllers are responsible for providing the data referenced in their Beacons' updates (although many Beacons are expected to provide an archival service making Bundles publicly available).  If this data is not available, the DID will not verify.
-* Because of the data availability responsibility, and the threat of a rogue Beacon publishing an invalid reference, the most secure Beacons will choose Bitcoin scripts that allow every DID controller a veto, although given current UTXO-sharing technology, this impedes availability.
+- DID controllers are responsible for providing the data referenced in their Beacons' updates (although many Beacons are expected to provide an archival service making Bundles publicly available).  If this data is not available, the DID will not verify.
+- Because of the data availability responsibility, and the threat of a rogue Beacon publishing an invalid reference, the most secure Beacons will choose Bitcoin scripts that allow every DID controller a veto, although given current UTXO-sharing technology, this impedes availability.
 
 ### Future Directions
 
-* ZCAPs delegation of the right to update only part of a DID Document;
-* more scalable Aggregator Beacons will be possible with a "transaction introspection" upgrade to Bitcoin, such as OP\_CTV or OP\_CAT; and
-* Beacons do not have to reuse their addresses if, in the controller's DID document, a descriptor is used instead of an address.
+- ZCAPs delegation of the right to update only part of a DID Document;
+- more scalable Aggregator Beacons will be possible with a "transaction introspection" upgrade to Bitcoin, such as OP\_CTV or OP\_CAT; and
+- Beacons do not have to reuse their addresses if, in the controller's DID document, a descriptor is used instead of an address.
 
 # 2. Terminology
 
@@ -169,7 +167,7 @@ A Sparse Merkle Tree (SMT) is a Merkle tree where each data point included at th
 
 **Invocation**
 
-See https://w3c-ccg.github.io/zcap-spec/#terminology
+See <https://w3c-ccg.github.io/zcap-spec/#terminology>
 
 **Schnorr signatures**
 
@@ -204,8 +202,8 @@ Late publishing is the ability for DID updates to be revealed at a later point i
 Offline creation refers to when a **did:btc1** identifier and corresponding initial DID document are created without requiring network interactions.
 
 **did:btc1** supports offline creation in two modes:
-* Key Pair Deterministic Creation; and
-* DID Document Initiated Creation.
+- Key Pair Deterministic Creation; and
+- DID Document Initiated Creation.
 
 **Sidecar**
 
@@ -225,7 +223,7 @@ The ABNF for a **did:btc1** DID follows:
 
 ```abnf
 did-btc1 = "did:btc1:" [ version ":" ] [ network ":" ] method-id
-version	= 1*DIGIT
+version = 1*DIGIT
 network =  "mainnet" / "signet" / "testnet" / "regnet"
 method-id = key-value / hash-value
 hash-value = "x1" bech32-encoding
@@ -236,15 +234,14 @@ bech32char = "0" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9" / "a" / "c" / "
 
 ABNF is defined by the [IETF RFC5234](https://datatracker.ietf.org/doc/html/rfc5234).
 
-
 ## 3.1 Examples
 
-All four following DIDs are equivalent: 
+All four following DIDs are equivalent:
 
-* did:btc1:k1t5rm7vud58tyspensq9weyxc49cyxyvyh72w0n5hc7g5t859aq7sz45d5a - MOST COMMON
-* did:btc1:<u>1:</u>k1t5rm7vud58tyspensq9weyxc49cyxyvyh72w0n5hc7g5t859aq7sz45d5a
-* did:btc1:<u>mainnet:</u>k1t5rm7vud58tyspensq9weyxc49cyxyvyh72w0n5hc7g5t859aq7sz45d5a
-* did:btc1:<u>1:mainnet:</u>k1t5rm7vud58tyspensq9weyxc49cyxyvyh72w0n5hc7g5t859aq7sz45d5a
+- did:btc1:k1t5rm7vud58tyspensq9weyxc49cyxyvyh72w0n5hc7g5t859aq7sz45d5a - MOST COMMON
+- did:btc1:<u>1:</u>k1t5rm7vud58tyspensq9weyxc49cyxyvyh72w0n5hc7g5t859aq7sz45d5a
+- did:btc1:<u>mainnet:</u>k1t5rm7vud58tyspensq9weyxc49cyxyvyh72w0n5hc7g5t859aq7sz45d5a
+- did:btc1:<u>1:mainnet:</u>k1t5rm7vud58tyspensq9weyxc49cyxyvyh72w0n5hc7g5t859aq7sz45d5a
 
 # 4. CRUD Operations
 
@@ -272,7 +269,9 @@ KeyGen() -> (secret_key, public_key)
 ```
 bech32('k', public_key) -> bech32_secp_pubkey
 ```
+
 5. Construct and return the DID following the ABNF (Section 2), with the `key-value` set to the bech32_secp_pubkey. If `version` is not 1, then it MUST be included in the DID. If `network` is not mainnet, then it MUST be included in the DID.
+
 ```
 return did:btc1:<version>:<network>:<bech32_secp_pubkey>
 ```
@@ -288,9 +287,10 @@ It is possible to create a **did:btc1** from some initiating arbitrary DID docum
 3. Create an arbitrary intermediate DID document representation, without the `id` field. The DID document SHOULD include:
     - A verificationMethod
     - At least one Beacon service of the type SingletonBeacon for an address on the specified Bitcoin `network` under the control of the DID controller
-4. Generate a `cid` (content identifier) for the intermediate DID document representation. 
+4. Generate a `cid` (content identifier) for the intermediate DID document representation.
 
 5. Bech32 encode the `cid` using the HRP value of `x`
+
 ```
 bech32('x', public_key) -> bech32_cid
 ```
@@ -307,13 +307,12 @@ did = did:btc1:<version>:<network>:<bech32_cid>
 
 9. For all verificationMethods, set the value of `verificationMethod.controller` to the `did`.
 
-
 ## 4.2 Read
 
 The read method takes a **did:btc1** `identifier` and returns the latest DID document at the time of resolution. To do so, resolution first retrieves/generates the initial DID document for the identifier and subsequently processes all signals from Beacons included in that DID document. Applying updates to the DID document as appropriate in the order specified by their version. The chain of updates MUST form a continuous, ordered set otherwise the DID is considered invalid due to late publishing.
 
 1. Using a colon (`:`) as the delimiter, split the `identifier` into its components: a *scheme*, a *method*, a *version*, a *network*, and a *method-id*. If the `identifier` contains only three components, set the *version* to `1` and *network* to `mainnet`. Use the third component of the `identifier` as the *method-id*. If there are four components, check if the third component can be cast to an integer. If so, set *version* to this value and *network* to `mainnet`. Otherwise, set the *network* to the component value and *version* to `1`.
-2. Check the validity of the identifier components. The *scheme* MUST be the value `did`. The *method* MUST be the value `btc1`. The *version* MUST be convertible to a positive integer value. The *network* must be one of `mainnet`, ` signet`, `testnet`, or `regnet`. If any of these requirements fail an `InvalidDID` error MUST be raised.
+2. Check the validity of the identifier components. The *scheme* MUST be the value `did`. The *method* MUST be the value `btc1`. The *version* MUST be convertible to a positive integer value. The *network* must be one of `mainnet`, `signet`, `testnet`, or `regnet`. If any of these requirements fail an `InvalidDID` error MUST be raised.
 3. Decode the `method-id` using bech32 to get `decode_result`
 4. If `decode_result.hrp` value is `k`, then the `method-id` encodes a Secp256k1 public key that can be used to deterministically generate a DID document. Return document constructed by running [4.2.1 Deterministic Resolution](#421-deterministic-resolution) with `identifier`, `network` and `decode_result.value`.
 5. Else If `decode_result.hrp` value is `x`, then the **did:btc1** has an external initiating DID document. Return document constructed by running [4.2.2 External Resolution](#422-external-resolution) with `identifier`, `network` and `decode_result.value`
@@ -324,10 +323,10 @@ The read method takes a **did:btc1** `identifier` and returns the latest DID doc
 The deterministic resolution algorithm takes in `identifier`, `network` and `key_bytes` value, where the `key_bytes` value is the result of bech32 decoding the `method-id`. This algorithm returns the resolved document.
 
 1. Initialize a `document` variable as an empty object.
-2. Set `document.id` to the identifier. 
+2. Set `document.id` to the identifier.
 3. Initialize a contextArray to empty array:
-    - Append the DID core context (https://www.w3.org/ns/did/v1)
-    - Append the Data Integrity context (https://w3id.org/security/data-integrity/v2)
+    - Append the DID core context (<https://www.w3.org/ns/did/v1>)
+    - Append the Data Integrity context (<https://w3id.org/security/data-integrity/v2>)
     - Append a **did:btc1** context
     - Set `document['@context]' to contextArray`
 4. Create initial verification method:
@@ -337,7 +336,7 @@ The deterministic resolution algorithm takes in `identifier`, `network` and `key
     - Set `verificationMethod.controller` to `identifier`
     - Set `verificationMethod.publicKeyMultibase` to `z` + the base58-btc encoding of the `key_bytes`.
 5. Set `document.verificationMethod` to `verificationMethod`.
-6. Initialize the `authentication`, `assertionMethod`, `capabilityInvocation`, and the `capabilityDelegation` properties in document to an array where the first item is the `verificationMethod.id`. 
+6. Initialize the `authentication`, `assertionMethod`, `capabilityInvocation`, and the `capabilityDelegation` properties in document to an array where the first item is the `verificationMethod.id`.
 7. Initialize the `document.services` property in `document` to the result of passing the `key_bytes` and `network` to the [4.2.3 Deterministically Generate Beacon Services](#423-deterministically-generate-beacon-services) Algorithm.
 8. Run through the [4.2.4 Process Beacon Updates](#424-process-beacon-updates-algorithm) algorithm passing in the `document.services` property.
 9. Return `document`.
@@ -345,7 +344,6 @@ The deterministic resolution algorithm takes in `identifier`, `network` and `key
 ### 4.2.2 External Resolution
 
 The external resolution algorithm takes in `identifier`, `network` and `cid_bytes` values, where `cid_bytes` is the result of bech32 decoding the `method-id`. The initial `intermediateDocumentRepresentation` MAY be passed in to the resolver through a sidecar mechanism. If this is not provided through sidecar, the resolver MUST attempt to fetch the `intermediateDocumentRepresentation` from a Content Addressable Storage such as IPFS. If no document can be found, the resolver MUST raise an `invalidDID` error. This algorithm returns the resolved document.
-
 
 1. Initialize a `document` variable as an empty object.
 2. If no `intermediateDocumentRepresentation`, fetch `cid_bytes` from CAS. If no  `intermediateDocumentRepresentation` found raise `invalidDID` error.
@@ -382,7 +380,6 @@ Generates a Beacon service from a `key_bytes`, a btc `network` and an `addressTy
 6. Set `beacon.serviceEndpoint` to `addressURI`.
 7. Return `beacon`.
 
-
 <div id="process_beacon_updates"/>
 
 ### 4.2.4 Process Beacon Updates Algorithm
@@ -393,46 +390,53 @@ The initial DID document should have been resolved and verified against a **did:
 
 Each Beacon Signal is a Bitcoin transaction of a particular format spent from a specific address identified as a Beacon service of a particular type in the DID document (See Section 5. Update Beacons). At the point in history determined by the block time of the beacon signal being processed, the Beacon that broadcast this signal MUST be in the DID document otherwise the signal can be discarded. The type of the Beacon defines how a Beacon signal should be formatted and how to retrieve the DID update payload committed to by this Beacon signal. DID update payloads are ZCAP-LD invocations containing a JSON patch that mutates the DID document (See [Section 4.3 Update](#43-update)). Resolvers MUST verify that the proof on the DID update payload is a valid invocation against a root capability generated from the `did:btc1` identifier following the algorithm in [Section 4.3.1.1 Root Capability](#4311-root-capability). The `patch` value in the DID update payload MUST increment the `versionId` property of the DID document. If a DID update payload sets the version of the DID document to more than one greater than the version of the current DID document at the time of processing, the DID MUST be considered invalid and an `incompleteHistory` error raised. If a DID update payload sets the version to less than or equal to the current DID document then the DID update payload MUST be the same hash as the previously applied update otherwise a `latePublishingError` MUST be raised.
 
-This algorithm takes in a DID document, identifies its current active Beacons, and then fetches all signals from each Beacon. Beacon signals are Bitcoin transactions published by a Bitcoin address identified by beacon services in the DID document being resolved. These signals are then aggregated and ordered using the transaction's inclusion time within the Bitcoin network. Once complete, signals are processed in order. Processing signals retrieves DID update data, containing a set of deltas that mutate the DID document and the canonical order that this mutation should be applied to the DID document. Updates MUST be applied in the order they are defined and updates with the same order MUST be the equivalent. As each signal is processed, the set of aggregated beacon signals MUST be recalculated if the beacon services identified in the DID document changes. Once all signals from all active beacons have been processed the latest DID document is returned. 
+This algorithm takes in a DID document, identifies its current active Beacons, and then fetches all signals from each Beacon. Beacon signals are Bitcoin transactions published by a Bitcoin address identified by beacon services in the DID document being resolved. These signals are then aggregated and ordered using the transaction's inclusion time within the Bitcoin network. Once complete, signals are processed in order. Processing signals retrieves DID update data, containing a set of deltas that mutate the DID document and the canonical order that this mutation should be applied to the DID document. Updates MUST be applied in the order they are defined and updates with the same order MUST be the equivalent. As each signal is processed, the set of aggregated beacon signals MUST be recalculated if the beacon services identified in the DID document changes. Once all signals from all active beacons have been processed the latest DID document is returned.
 
 The algorithm is as follows:
 
-1.  Initialize a `orderedSignals` variable to an empty array.
-2.  Initialize a `latestDocument` variable to `document`.
-3.  Initialize `activeBeaconIDs` to an empty array.
-4.  Initialize `currentVersion` to 0.
-5.  Initialize `processedUpdates` and `pendingUpdates` to empty arrays.
-6.  Identify all Beacons in the `document.service` array and store in a `beaconServices` array.
-7.  For each `beaconService` in `beaconServices`:
-  - If `beaconService.id` NOT IN  `activeBeaconIDs`:
-      -  Set `beaconSignals` to the result of passing `beaconService` and `network` into the [4.2.4.1 Fetch Beacon Signals](#4241-fetch-beacon-signals-algorithm) algorithm. 
-      - Push `beaconSignals` to the `orderedSignals` array.
-      - Push `beaconService.id` to `activeBeaconIDs`
+1. Initialize a `orderedSignals` variable to an empty array.
+2. Initialize a `latestDocument` variable to `document`.
+3. Initialize `activeBeaconIDs` to an empty array.
+4. Initialize `currentVersion` to 0.
+5. Initialize `processedUpdates` and `pendingUpdates` to empty arrays.
+6. Identify all Beacons in the `document.service` array and store in a `beaconServices` array.
+7. For each `beaconService` in `beaconServices`:
+
+- If `beaconService.id` NOT IN  `activeBeaconIDs`:
+  - Set `beaconSignals` to the result of passing `beaconService` and `network` into the [4.2.4.1 Fetch Beacon Signals](#4241-fetch-beacon-signals-algorithm) algorithm.
+  - Push `beaconSignals` to the `orderedSignals` array.
+  - Push `beaconService.id` to `activeBeaconIDs`
+
 8. If `activeBeaconIDs.length !== beaconServices.length`:
-  - Identify beaconIds in `activeBeaconIDs` and NOT in the `beaconServices` array. Store in `removedBeaconIDs`.
-  - Remove all signals from the `orderedSignals` array with a `signal.beaconId` value in the `removedBeaconIDs` array.
-  - Remove `removedBeaconIDs` from the `activeBeaconIDs` array.
-  - Set `removedBeaconIDs` to an empty array
-  - Expect the length of `activeBeaconIDs` to equal the length of `beaconServices`
+
+- Identify beaconIds in `activeBeaconIDs` and NOT in the `beaconServices` array. Store in `removedBeaconIDs`.
+- Remove all signals from the `orderedSignals` array with a `signal.beaconId` value in the `removedBeaconIDs` array.
+- Remove `removedBeaconIDs` from the `activeBeaconIDs` array.
+- Set `removedBeaconIDs` to an empty array
+- Expect the length of `activeBeaconIDs` to equal the length of `beaconServices`
+
 9. If `orderedSignals` is empty AND `pendingUpdates` is empty, return `latestDocument`. Else if `pendingUpdates` remain, then throw IncompleteHistory error.
-10.  Order the `orderedSignals` array using the `signal.blockHeight` property on each `signal` element in the array.
+10. Order the `orderedSignals` array using the `signal.blockHeight` property on each `signal` element in the array.
 11. For each `signal` in `orderedSignals`:
-  - Set `type` to `signal.beaconType`
-  - Set `didUpdatePayload` to the result of passing `signal.tx` to the Process Beacon Signal algorithm defined by the corresponding Beacon `type`. See [Section 5 Beacons](#5-update-beacons).
-  - Push `didUpdatePayload` to `pendingUpdates`
-  - Remove `signal` from `orderedSignals`
+
+- Set `type` to `signal.beaconType`
+- Set `didUpdatePayload` to the result of passing `signal.tx` to the Process Beacon Signal algorithm defined by the corresponding Beacon `type`. See [Section 5 Beacons](#5-update-beacons).
+- Push `didUpdatePayload` to `pendingUpdates`
+- Remove `signal` from `orderedSignals`
+
 12. Sort `pendingUpdates` by `version`.
 13. for `didUpdatePayload` in `pendingUpdates`:
-  - If `didUpdatePayload.version` <= `currentVersion`:
-      - Set `prevProcessedUpdate` to the update with version `didUpdatePayload.version` in `processedUpdates`.
-      - Check hash of `prevProcessedUpdate` is equal to `didUpdatePayload`. If not, then MUST raise a `latePublish` error.
-  - Else if `didUpdatePayload.version` == `currentVersion + 1`:
-    - Verify the `didUpdatePayload`, if invalid raise InvalidUpdateInvocation error.
-    - Apply the JSON patch transformation `didUpdatePayload.patch` to the `latestDocument`
-    - Set `currentVersion` to `didUpdatePayload.version`
-    - Push `didUpdatePayload` to `processedUpdates`
+
+- If `didUpdatePayload.version` <= `currentVersion`:
+  - Set `prevProcessedUpdate` to the update with version `didUpdatePayload.version` in `processedUpdates`.
+  - Check hash of `prevProcessedUpdate` is equal to `didUpdatePayload`. If not, then MUST raise a `latePublish` error.
+- Else if `didUpdatePayload.version` == `currentVersion + 1`:
+  - Verify the `didUpdatePayload`, if invalid raise InvalidUpdateInvocation error.
+  - Apply the JSON patch transformation `didUpdatePayload.patch` to the `latestDocument`
+  - Set `currentVersion` to `didUpdatePayload.version`
+  - Push `didUpdatePayload` to `processedUpdates`
 - Else:
-    - Unable to construct canonical update set, missing a version. Check for additional Beacon signals, return to Step 6.
+  - Unable to construct canonical update set, missing a version. Check for additional Beacon signals, return to Step 6.
 - Return to step 6.
 
 ```mermaid
@@ -477,16 +481,17 @@ sequenceDiagram
 
 #### 4.2.4.1 Fetch Beacon Signals Algorithm
 
-
 This algorithm takes in a Bitcoin `network` from the `identifier` and single `beaconService` as defined in a DID document. It then fetches all associated Bitcoin transactions and returns an array of beaconSignals. Each signal in the array contains the beaconId, the Bitcoin transaction, the Beacon type and the block height for the transaction.
 
 1. Initialize a `beaconSignals` variable to an empty array.
 2. Set `beaconAddressURI` to `beaconService.serviceEndpoint`
 3. Set `beaconAddress` to the conversion of `beaconAddressURI` to a Bitcoin address following BIP21.
-4. Set `spendTxs` to the spends on the Bitcoin blockchain `network` from the `beaconAddress`. 
+4. Set `spendTxs` to the spends on the Bitcoin blockchain `network` from the `beaconAddress`.
 5. For each `tx` in `spendTxs`:
-  - Find the `blockHeight` that the `tx` was included in the ledger
-  - Initialize a `beaconSignal` variable to the value:
+
+- Find the `blockHeight` that the `tx` was included in the ledger
+- Initialize a `beaconSignal` variable to the value:
+
 ```json
 {
     "beaconId": `beaconService.id`,
@@ -495,7 +500,9 @@ This algorithm takes in a Bitcoin `network` from the `identifier` and single `be
     "tx": `tx`
 }
 ```
-  - Push `beaconSignal` to the `beaconSignals` array
+
+- Push `beaconSignal` to the `beaconSignals` array
+
 6. Return `beaconSignals`.
 
 ```mermaid
@@ -529,7 +536,6 @@ An update is an invoked capability using the ZCAP-LD data format, signed by the 
 6. Identify a Beacon(s) from the set of Beacon services in the current DID document being updated.
 7. Pass the `didUpdatePayload` and `beacon` to the Broadcast DID Update Attestation algorithm defined for the type of Beacon selected. (See [Section 5. Beacons](#5-update-beacons))
 
-
 ```mermaid
 sequenceDiagram
               autonumber
@@ -547,7 +553,6 @@ sequenceDiagram
     Note right of Update Service: Broadcast DID Update  Attestation is an algorithm<br/> defined by each Beacon type separately.
 ```
 
-
 ### 4.3.1 Update Capabilities
 
 #### 4.3.1.1 Root capability
@@ -555,7 +560,7 @@ sequenceDiagram
 Given any **did:btc1** identifier, this specification defines a deterministic algorithm to generate a root capability from this identifier. This root capability is defined as the capability that controls authorization to update the DID's document. The algorithm is as follows:
 
 1. Define `rootCapability` as an empty JSON object.
-2. Set `rootCapability['@context']` to 'https://w3id.org/zcap/v1'.
+2. Set `rootCapability['@context']` to '<https://w3id.org/zcap/v1>'.
 3. Set `encodedIdentifier` to result of `encodeURIComponent(identifier)`
 3. Set `rootCapability.id` to `urn:zcap:root:${encodedIdentifier}`,
 4. Set `rootCapability.controller` to `identifier`.
@@ -575,7 +580,6 @@ Below is an example root capability for updating the DID document for **did:btc1
 #### 4.3.1.2 An Invocation of the Root Capability to Update a DID document
 
 An update invocation for a **did:btc1** is an invocation per the [ZCAP-LD specification](https://w3c-ccg.github.io/zcap-spec/). The invocation contains a `patch`, which is a JSON patch object following [RFC6902](https://datatracker.ietf.org/doc/html/rfc6902) defining how the DID document should be mutated.
-
 
 Below is an example of a `didUpdatePayload`. An invoked ZCAP-LD capability containing a `patch` defining how the DID document for **did:btc1:k1t5rm7vud58tyspensq9weyxc49cyxyvyh72w0n5hc7g5t859aq7sz45d5a** should be mutated.
 
@@ -607,11 +611,9 @@ Below is an example of a `didUpdatePayload`. An invoked ZCAP-LD capability conta
 }
 ```
 
-
 ## 4.4 Deactivate
 
 To deactivate a **did:btc1**, the DID controller MUST add the property `deactivated` with the value `true` on the DID document. To do this, the DID controller constructs a valid DID Update payload with a JSON patch that adds this propery and announce the payload through a Beacon in their current DID document following the algorithm in [Section 4.3 Update](#43-update). Once a **did:btc1** has been deactivated this state is considered permanent and resolution MUST terminate.
-
 
 <a id="beacons"></a>
 
@@ -619,7 +621,7 @@ To deactivate a **did:btc1**, the DID controller MUST add the property `deactiva
 
 Beacons are the mechanism by which a DID controller announces an update their DID document by broadcasting an attestation to this update onto the public bitcoin network. Beacons are identified by a Bitcoin address and emit Beacon signals by broadcasting a valid Bitcoin transaction that spends from this Beacon address. These transactions include attestations to a set of `didUpdatePayload`s, either in the form of Content Addressable Identifiers (CIDs) or Sparse Merkle Tree (SMT) roots. Beacons are included as a service in DID documents, with the Service Endpoint identifying a Bitcoin address to watch for Beacon signals. All Beacon signals broadcast from this Beacon MUST be processed as part of resolution. The type of the Beacon service in the DID document defines how Beacon signals should be processed.
 
-**did:btc1** supports different Beacon types, with each type defining a set of algorithms for: 
+**did:btc1** supports different Beacon types, with each type defining a set of algorithms for:
 
 1. How a Beacon can be established and added as a service to a DID document.
 2. How attestations to DID updates are broadcast within Beacon signals.
@@ -629,9 +631,7 @@ This is an extendable mechanism, such that in the future new Beacon types could 
 
 The current, active Beacons of a DID document are specified in the document's `service` property. By updating the DID document, a DID controller can change the set of Beacons they can use to broadcast updates to their DID document over time. Resolution of a DID MUST process signals from all Beacons identified in the latest DID document and apply them in order determined by the version specified by the `didUpdatePayload`.
 
-
 All resolvers of **did:btc1** DIDs MUST support the core Beacon types defined in this specification.
-
 
 ## 5.1 Singleton Beacon
 
@@ -643,10 +643,13 @@ The algorithm is as follows:
 
 1. Generate a secp256k1 keypair.
 2. Use the public key to generate a Bitcoin address. It is RECOMMENDED to use either p2pkh, p2wpkh, p2tr. However, other custom Bitcoin addresses are still valid. It is up to the DID controller to ensure the address is spendable by them alone.
-  - It is possible to use an existing Bitcoin address
-  - Before the Beacon can be used to publish an update it must be funded
+
+- It is possible to use an existing Bitcoin address
+- Before the Beacon can be used to publish an update it must be funded
+
 4. Set `beaconUri` to the URI for the address following BIP21.
 5. Initialize `beaconService` to:
+
 ```json
 {
     "id": "#singletonBeacon", 
@@ -655,8 +658,8 @@ The algorithm is as follows:
     "casType": "IPFS" // Optional hint at the CAS storage used 
 }
 ```
-6. Add `beaconService` to the DID document through an update following the algorithm defined in 4.3. Update
 
+6. Add `beaconService` to the DID document through an update following the algorithm defined in 4.3. Update
 
 ### 5.1.2 Broadcast DID Update attestation
 
@@ -687,13 +690,11 @@ A Beacon of the type CIDAggregatedBTCBeacon is a Beacon that publishes Bitcoin t
 
 To establish a Beacon, a cohort of cooperating parties SHOULD generate an n-of-n p2tr Bitcoin address where each party contributes a public key. Furthermore, each party SHOULD verify that their key is part of the address and all other keys that are part of the address are keys with controllers able to produce valid signatures.
 
-To establish a Beacon there are two roles. One is the cohort participant, they want to join a Beacon cohort and submit a request to do so with a key and proof of control over that key. The other is the Beacon coordinator, they advertise and curate Beacon cohorts by combining Beacon participants into cohorts, verifying proofs of control, and producing Beacon addresses. 
-
+To establish a Beacon there are two roles. One is the cohort participant, they want to join a Beacon cohort and submit a request to do so with a key and proof of control over that key. The other is the Beacon coordinator, they advertise and curate Beacon cohorts by combining Beacon participants into cohorts, verifying proofs of control, and producing Beacon addresses.
 
 #### 5.2.1.1 Create Beacon Advertisement
 
-Any entity may act in the role of Beacon coordinator, creating a Beacon advertisement that they can broadcast across any medium. A Beacon advert specifies the properties of Beacon that the coordinator intends to establish, including the Beacon type, cohort size, update frequency and response latency. Once the advert has been created and broadcast, the coordinator waits for enough participants to opt in before establishing the Beacon. 
-
+Any entity may act in the role of Beacon coordinator, creating a Beacon advertisement that they can broadcast across any medium. A Beacon advert specifies the properties of Beacon that the coordinator intends to establish, including the Beacon type, cohort size, update frequency and response latency. Once the advert has been created and broadcast, the coordinator waits for enough participants to opt in before establishing the Beacon.
 
 #### 5.2.1.2 Beacon Opt-in
 
@@ -701,11 +702,9 @@ DID controllers who wish to participate in a Beacon first find potential Beacon 
 
 **Note: Beacon opt-in needs to provide a return interact. Is this another reason for providing a DID**
 
-
 #### 5.2.1.3 Cohort Set
 
 Once a Beacon aggregator has received enough opt-in responses from participants to satisfy the Beacon properties they generate the n-of-n p2tr Bitcoin address for the Beacon. The address and all the cohort public keys the address is constructed from are then sent to all participants in a CohortSet message.
-
 
 #### 5.2.1.4 Add Beacon Service to DID document
 
@@ -782,13 +781,12 @@ A Beacon signal from a CIDAggregator Beacon is a Bitcoin transaction that contai
 2. Check `txOut` is of the format [OP_RETURN, OP_PUSH32, 32BYTE_CID], if not return. Bitcoin transaction is not a Beacon signal.
 3. Set `cid` to the 32 bytes in `txOut`.
 4. Initialize a `didUpdateBundle` variable to the result of retrieving the `cid` from IPFS. If unable to retrieve `cid` MUST throw a `latePublishError` and treat the DID being resolved as invalid.
-5. Set `didUpdateCID` to the value of `didUpdateBundle[document.id]`. 
+5. Set `didUpdateCID` to the value of `didUpdateBundle[document.id]`.
 6. If `didUpdateCID` is empty return null. (This Beacon signal contains no update for the DID being resolved)
 7. Set `didUpdatePayload` to the result of retrieving `didUpdateCID` from Content Addressable Storage or Sidecar data. If `didUpdateCID` not found MUST throw a `latePublishError`.
 8. Return `didUpdatePayload`.
 
 ![](https://hackmd.io/_uploads/HkZe90lkp.jpg)
-
 
 ## 5.3 SMTAggregator Beacon
 
@@ -859,7 +857,6 @@ sequenceDiagram
 
 Invalidation attacks are where adversaries are able to publish Beacon Signals that claim to contain updates for DIDs they do not control. Due to the requirement for complete coverage, if these updates can not be retrieved by a resolver the DID MUST be considered invalid. To prevent these attacks, all Beacon Signals SHOULD be authorized by all cohort participants using an n-of-n multi-signature. That way DID controllers can verify the updates announced within a Beacon Signal before authorizing it.
 
-
 ## 6.2 Considerations Deploying did:btc1
 
 ### 6.2.1 Data Retention
@@ -870,14 +867,13 @@ Invalidation attacks are where adversaries are able to publish Beacon Signals th
 
 An Aggregator Beacon Address SHOULD be an n-of-n pay-to-taproot address, with a cohort key contributed to the n by each of the cohort participants. DID controllers participating in aggregation cohorts SHOULD verify the Beacon address is an n-of-n and that one of the n keys is the cohort key provided to the Beacon coordinator. This can be achieved only by constructing the address for themselves from the set of cohort keys which the coordinator SHOULD provide.
 
-
 ### 6.2.3 Aggregator Beacon Signal Verification
 
 Beacon Signals from Aggregators that a DID controller is a participant of will either announce an update for their DID or will contain no update for their DID. The DID controller SHOULD verify that the Beacon Signal announces the update they expect (or no update) for all Beacon Signals broadcast by Aggregators before authorizing them. If they do not, then invalidation attacks become possible where a Beacon Signal announces an update for a DID that cannot be retrieved causing the DID to be invalidated.
 
 ### 6.2.4 Key Compromise
 
-In **did:btc1** cryptographic keys authorize both DID updates and Beacon Signals. Should these keys get compromised without the DID controller's knowledge, it would be possible for an adversary to take control of a DID by submitting a DID Update Payload to a Beacon that replaces key material and Beacons in the DID document for ones under the adversary's control. Such an attack would be detectable by the DID controller, as they would see a valid spend from a Beacon that they did not authorize. Additionally, if the DID relied on sidecar data, without access to this data the DID would be useless to the adversary as they would be unable to demonstrate a valid complete history of the DID during resolution. 
+In **did:btc1** cryptographic keys authorize both DID updates and Beacon Signals. Should these keys get compromised without the DID controller's knowledge, it would be possible for an adversary to take control of a DID by submitting a DID Update Payload to a Beacon that replaces key material and Beacons in the DID document for ones under the adversary's control. Such an attack would be detectable by the DID controller, as they would see a valid spend from a Beacon that they did not authorize. Additionally, if the DID relied on sidecar data, without access to this data the DID would be useless to the adversary as they would be unable to demonstrate a valid complete history of the DID during resolution.
 
 ### 6.2.5 Cryptographic Compromise
 
@@ -885,7 +881,7 @@ The security of **did:btc1** identifiers depends on the security of Schnorr sign
 
 ### 6.2.6 Bitcoin Blockchain Compromise
 
-The security of **did:btc1** identifiers depends on the security of the Bitcoin blockchain. Should the Bitcoin blockchain become compromised such that its history could be rewritten, for example through a 51% attack, then Beacon Signals that were once part of the blockchain could be removed or replaced--although the longer these Signals have been included in the blockchain the more difficult this becomes. A 51% attack could prevent future Beacon Signals from being included within the network, however this would require the 51% attack to remain indefinitely enforced. Furthermore,  without Key Compromise related to a specific DID, the compromise of the Bitcoin blockchain would not enable adversarial parties to take control of a DID. 
+The security of **did:btc1** identifiers depends on the security of the Bitcoin blockchain. Should the Bitcoin blockchain become compromised such that its history could be rewritten, for example through a 51% attack, then Beacon Signals that were once part of the blockchain could be removed or replaced--although the longer these Signals have been included in the blockchain the more difficult this becomes. A 51% attack could prevent future Beacon Signals from being included within the network, however this would require the 51% attack to remain indefinitely enforced. Furthermore,  without Key Compromise related to a specific DID, the compromise of the Bitcoin blockchain would not enable adversarial parties to take control of a DID.
 
 # 7. Privacy Considerations
 
@@ -901,7 +897,7 @@ Since updates to DID documents are not required to be public, neither are **did:
 
 ### 7.1.3 Offline DID generation
 
-**did:btc1** was designed to support offline DID generation, that is, the creation of a **did:btc1** identifier and associated DID document without any network calls to the Bitcoin blockchain. This is possible in both deterministic and externally resolvable DIDs. 
+**did:btc1** was designed to support offline DID generation, that is, the creation of a **did:btc1** identifier and associated DID document without any network calls to the Bitcoin blockchain. This is possible in both deterministic and externally resolvable DIDs.
 
 ### 7.1.4 Beacon coordinators do not need to view or validate DID documents or document updates
 
